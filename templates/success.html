@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmed - Paradise Guest House{% endblock %}
+
+{% block content %}
+<!-- Success Section -->
+<section class="success-section">
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon">✅</div>
+            <h1>Booking Confirmed!</h1>
+            <p class="success-message">Thank you, <strong>{{ name }}</strong>! Your booking has been successfully saved.
+            </p>
+
+            <div class="booking-details">
+                <h3>Booking Details</h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Booking ID</span>
+                        <span class="detail-value">#{{ booking_id }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Booking Type</span>
+                        <span class="detail-value">{{ booking_type }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Start Date</span>
+                        <span class="detail-value">{{ start_date }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">End Date</span>
+                        <span class="detail-value">{{ end_date }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Number of Days</span>
+                        <span class="detail-value">{{ num_days }} day{{ 's' if num_days > 1 else '' }}</span>
+                    </div>
+                    <div class="detail-item total">
+                        <span class="detail-label">Total Price ({{ num_days }} × ₹{{ "{:,}".format(4000 if booking_type
+                            == 'Stay' else 5500) }}/day)</span>
+                        <span class="detail-value price">₹{{ "{:,}".format(price) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-note">
+                <p>📞 We will contact you shortly to confirm your booking.</p>
+                <p>For any queries, please <a href="{{ url_for('contact') }}">contact us</a>.</p>
+            </div>
+
+            <div class="success-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
+                <a href="{{ url_for('book') }}" class="btn btn-secondary">Make Another Booking</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

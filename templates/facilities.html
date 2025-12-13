@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Facilities - Paradise Guest House{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <h1>Our Facilities</h1>
+    <p>Everything you need for a comfortable stay or memorable function</p>
+</section>
+
+<!-- Facilities Content -->
+<section class="facilities-section">
+    <div class="container">
+
+        <!-- Ground Floor -->
+        <div class="floor-section">
+            <div class="floor-header">
+                <span class="floor-icon">🏠</span>
+                <h2>Ground Floor</h2>
+            </div>
+            <div class="facilities-grid">
+                <div class="facility-card">
+                    <div class="facility-image">
+                        <img src="{{ url_for('static', filename='images/hall1.jpg') }}" alt="Big Hall">
+                    </div>
+                    <div class="facility-content">
+                        <h3>Big Hall</h3>
+                        <p>A spacious hall perfect for family gatherings, small functions, and events.
+                            Comfortable seating and ample space for all your needs.</p>
+                        <ul class="facility-features">
+                            <li>✓ Spacious area</li>
+                            <li>✓ LED Lighting</li>
+                            <li>✓ Perfect for gatherings</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="facility-card">
+                    <div class="facility-image">
+                        <img src="{{ url_for('static', filename='images/hall2.jpg') }}" alt="Hall Interior">
+                    </div>
+                    <div class="facility-content">
+                        <h3>2 Comfortable Rooms</h3>
+                        <p>Two well-furnished rooms with comfortable beds and all basic amenities
+                            for a relaxing stay.</p>
+                        <ul class="facility-features">
+                            <li>✓ Comfortable beds</li>
+                            <li>✓ Fan & lighting</li>
+                            <li>✓ Private space</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- First Floor -->
+        <div class="floor-section">
+            <div class="floor-header">
+                <span class="floor-icon">🍽️</span>
+                <h2>First Floor</h2>
+            </div>
+            <div class="facilities-grid">
+                <div class="facility-card wide">
+                    <div class="facility-image">
+                        <img src="{{ url_for('static', filename='images/hall3.jpg') }}" alt="Dining Area">
+                    </div>
+                    <div class="facility-content">
+                        <h3>Open Dining Area</h3>
+                        <p>A beautiful open dining area with excellent natural lighting,
+                            perfect for hosting meals during functions and gatherings.</p>
+                        <ul class="facility-features">
+                            <li>✓ Full open layout</li>
+                            <li>✓ Excellent lighting</li>
+                            <li>✓ Chairs provided</li>
+                            <li>✓ Complete crockery set</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Gallery -->
+        <div class="photo-gallery">
+            <h2>More Photos</h2>
+            <div class="gallery-row">
+                <div class="gallery-photo">
+                    <img src="{{ url_for('static', filename='images/hall4.jpg') }}" alt="Hall View">
+                </div>
+                <div class="gallery-photo">
+                    <img src="{{ url_for('static', filename='images/hall5.jpg') }}" alt="Hall with Seating">
+                </div>
+            </div>
+        </div>
+
+        <!-- Amenities -->
+        <div class="amenities-section">
+            <h2>Additional Amenities</h2>
+            <div class="amenities-grid">
+                <div class="amenity-item">
+                    <span class="amenity-icon">💡</span>
+                    <span>LED Lighting</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">🪑</span>
+                    <span>Chairs</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">🍽️</span>
+                    <span>Crockery</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">🚿</span>
+                    <span>Clean Washrooms</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">🅿️</span>
+                    <span>Parking Space</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">🌬️</span>
+                    <span>Ceiling Fans</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="facilities-pricing">
+    <div class="container">
+        <h2 class="section-title">Pricing</h2>
+        <div class="pricing-table">
+            <div class="pricing-row">
+                <div class="pricing-label">
+                    <span class="pricing-icon">🏠</span>
+                    <div>
+                        <h4>Stay Only</h4>
+                        <p>Ground Floor - Hall & Rooms</p>
+                    </div>
+                </div>
+                <div class="pricing-amount">₹4,000</div>
+            </div>
+            <div class="pricing-row featured">
+                <div class="pricing-label">
+                    <span class="pricing-icon">🎉</span>
+                    <div>
+                        <h4>Function with Crockery</h4>
+                        <p>Full Venue with Dining Area</p>
+                    </div>
+                </div>
+                <div class="pricing-amount">₹5,500</div>
+            </div>
+        </div>
+        <div class="pricing-cta">
+            <a href="{{ url_for('book') }}" class="btn btn-primary btn-large">Book Now</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

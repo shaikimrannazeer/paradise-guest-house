@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Paradise Guest House - Welcome{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to Paradise</h1>
+        <p class="hero-subtitle">Your Perfect Guest House in Adilabad</p>
+        <p class="hero-description">
+            Experience comfort and warmth at our beautiful guest house.
+            Whether you're looking for a peaceful stay or a perfect venue for your special functions,
+            we have everything you need.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('book') }}" class="btn btn-primary">Book Now</a>
+            <a href="{{ url_for('facilities') }}" class="btn btn-secondary">View Facilities</a>
+        </div>
+    </div>
+</section>
+
+<!-- Image Gallery Section -->
+<section class="gallery">
+    <div class="container">
+        <h2 class="section-title">Our Beautiful Venue</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='images/hall1.jpg') }}" alt="Main Hall with LED Lighting">
+            </div>
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='images/hall2.jpg') }}" alt="Spacious Hall Interior">
+            </div>
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='images/hall3.jpg') }}" alt="Hall with Elegant Curtains">
+            </div>
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='images/hall4.jpg') }}" alt="Hall Night View">
+            </div>
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='images/hall5.jpg') }}" alt="Hall with Seating Area">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose Us?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🏠</div>
+                <h3>Spacious Halls</h3>
+                <p>Large, comfortable halls perfect for gatherings and functions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛏️</div>
+                <h3>Cozy Rooms</h3>
+                <p>Well-furnished rooms for a relaxing and comfortable stay</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🍽️</div>
+                <h3>Dining Area</h3>
+                <p>Open dining area with great lighting and all amenities</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Affordable</h3>
+                <p>Competitive pricing starting from ₹4000 only</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Preview -->
+<section class="pricing-preview">
+    <div class="container">
+        <h2 class="section-title">Our Packages</h2>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Stay Package</h3>
+                    <div class="price">₹4,000</div>
+                </div>
+                <div class="pricing-body">
+                    <ul>
+                        <li>✓ Ground Floor Access</li>
+                        <li>✓ Big Hall</li>
+                        <li>✓ 2 Comfortable Rooms</li>
+                        <li>✓ Basic Amenities</li>
+                    </ul>
+                    <a href="{{ url_for('book') }}" class="btn btn-primary">Book Stay</a>
+                </div>
+            </div>
+            <div class="pricing-card featured">
+                <div class="pricing-badge">Popular</div>
+                <div class="pricing-header">
+                    <h3>Function Package</h3>
+                    <div class="price">₹5,500</div>
+                </div>
+                <div class="pricing-body">
+                    <ul>
+                        <li>✓ Full Venue Access</li>
+                        <li>✓ Open Dining Area</li>
+                        <li>✓ Chairs & Crockery</li>
+                        <li>✓ Excellent Lighting</li>
+                    </ul>
+                    <a href="{{ url_for('book') }}" class="btn btn-primary">Book Function</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Location Section -->
+<section class="location-section">
+    <div class="container">
+        <h2 class="section-title">Our Location</h2>
+        <div class="location-info">
+            <div class="location-icon">📍</div>
+            <p><strong>Paradise Guest House</strong></p>
+            <p>Beside Royal Palace Garden, Sathnala Road</p>
+            <p>Adilabad, Telangana - 504001</p>
+            <p class="location-contact">📞 +91 94900 25226 | +91 62812 01303</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2>Ready to Book Your Stay?</h2>
+        <p>Contact us today or book online in just a few clicks!</p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('book') }}" class="btn btn-primary btn-large">Book Now</a>
+            <a href="{{ url_for('contact') }}" class="btn btn-secondary btn-large">Contact Us</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Now - Paradise Guest House{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <h1>Book Your Stay</h1>
+    <p>Fill in the details below to make your reservation</p>
+</section>
+
+<!-- Booking Form Section -->
+<section class="booking-section">
+    <div class="container">
+        <div class="booking-wrapper">
+
+            <!-- Booking Form -->
+            <div class="booking-form-container">
+                <form class="booking-form" action="{{ url_for('book') }}" method="POST" id="bookingForm">
+
+                    <!-- Name Field -->
+                    <div class="form-group">
+                        <label for="name">Full Name <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <!-- Phone Field -->
+                    <div class="form-group">
+                        <label for="phone">Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number"
+                            pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                    </div>
+
+                    <!-- Date Fields -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start_date">Start Date <span class="required">*</span></label>
+                            <input type="date" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">End Date <span class="required">*</span></label>
+                            <input type="date" id="end_date" name="end_date" required>
+                        </div>
+                    </div>
+
+                    <!-- Booking Type -->
+                    <div class="form-group">
+                        <label for="booking_type">Booking Type <span class="required">*</span></label>
+                        <select id="booking_type" name="booking_type" required>
+                            <option value="" disabled selected>Select booking type</option>
+                            <option value="Stay">Stay Only (₹4,000/day)</option>
+                            <option value="Function">Function with Crockery (₹5,500/day)</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Display -->
+                    <div class="price-display" id="priceDisplay">
+                        <div class="price-breakdown">
+                            <span class="price-label">Days: <span id="numDays">0</span></span>
+                            <span class="price-label">Rate: <span id="ratePerDay">₹0</span>/day</span>
+                        </div>
+                        <div class="price-total">
+                            <span class="price-label">Total:</span>
+                            <span class="price-value" id="priceValue">₹0</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-large btn-block">
+                        Confirm Booking
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Booking Info Sidebar -->
+            <div class="booking-info">
+                <div class="info-card">
+                    <h3>📋 Booking Information</h3>
+                    <ul>
+                        <li><strong>Stay Package:</strong> Ground floor access with hall and 2 rooms</li>
+                        <li><strong>Function Package:</strong> Full venue including dining area with chairs and crockery
+                        </li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>💰 Pricing (Per Day)</h3>
+                    <ul class="pricing-list">
+                        <li>
+                            <span>Stay Only</span>
+                            <span class="price">₹4,000/day</span>
+                        </li>
+                        <li>
+                            <span>Function</span>
+                            <span class="price">₹5,500/day</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>📞 Need Help?</h3>
+                    <p>Contact us for any questions about your booking.</p>
+                    <a href="{{ url_for('contact') }}" class="btn btn-secondary">Contact Us</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Form Validation Script -->
+<script>
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').setAttribute('min', today);
+    document.getElementById('end_date').setAttribute('min', today);
+
+    // Calculate price function
+    function calculatePrice() {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const bookingType = document.getElementById('booking_type').value;
+
+        const numDaysEl = document.getElementById('numDays');
+        const ratePerDayEl = document.getElementById('ratePerDay');
+        const priceValueEl = document.getElementById('priceValue');
+
+        let ratePerDay = 0;
+        if (bookingType === 'Stay') {
+            ratePerDay = 4000;
+        } else if (bookingType === 'Function') {
+            ratePerDay = 5500;
+        }
+
+        let numDays = 0;
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            numDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (numDays < 1) numDays = 1;
+        }
+
+        numDaysEl.textContent = numDays;
+        ratePerDayEl.textContent = '₹' + ratePerDay.toLocaleString('en-IN');
+        priceValueEl.textContent = '₹' + (numDays * ratePerDay).toLocaleString('en-IN');
+    }
+
+    // Update end date minimum when start date changes
+    document.getElementById('start_date').addEventListener('change', function () {
+        document.getElementById('end_date').setAttribute('min', this.value);
+        if (document.getElementById('end_date').value < this.value) {
+            document.getElementById('end_date').value = this.value;
+        }
+        calculatePrice();
+    });
+
+    document.getElementById('end_date').addEventListener('change', calculatePrice);
+    document.getElementById('booking_type').addEventListener('change', calculatePrice);
+
+    // Form validation
+    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        const startDate = new Date(document.getElementById('start_date').value);
+        const endDate = new Date(document.getElementById('end_date').value);
+
+        if (endDate < startDate) {
+            e.preventDefault();
+            alert('End date cannot be before start date!');
+        }
+    });
+</script>
+
+<style>
+    .price-display {
+        background: linear-gradient(135deg, #f0f9f6 0%, #e8f5f0 100%);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(45, 138, 110, 0.15);
+    }
+
+    .price-breakdown {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed rgba(45, 138, 110, 0.2);
+    }
+
+    .price-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
