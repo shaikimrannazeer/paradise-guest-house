@@ -43,6 +43,11 @@
                         </div>
                     </div>
 
+                    <!-- Availability Status -->
+                    <div class="availability-status" id="availabilityStatus" style="display: none;">
+                        <div class="availability-message" id="availabilityMessage"></div>
+                    </div>
+
                     <!-- Booking Type -->
                     <div class="form-group">
                         <label for="booking_type">Booking Type <span class="required">*</span></label>
@@ -114,6 +119,10 @@
     document.getElementById('start_date').setAttribute('min', today);
     document.getElementById('end_date').setAttribute('min', today);
 
+    // Availability check state
+    let isDateAvailable = true;
+    const submitBtn = document.querySelector('button[type="submit"]');
+
     // Calculate price function
     function calculatePrice() {
         const startDate = document.getElementById('start_date').value;
@@ -144,6 +153,63 @@
         priceValueEl.textContent = '₹' + (numDays * ratePerDay).toLocaleString('en-IN');
     }
 
+    // Check date availability via API
+    async function checkAvailability() {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const statusDiv = document.getElementById('availabilityStatus');
+        const messageDiv = document.getElementById('availabilityMessage');
+
+        // Only check if both dates are selected
+        if (!startDate || !endDate) {
+            statusDiv.style.display = 'none';
+            return;
+        }
+
+        // Show loading state
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'availability-status checking';
+        messageDiv.textContent = '🔄 Checking availability...';
+
+        try {
+            const response = await fetch('/api/check-availability', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    start_date: startDate,
+                    end_date: endDate
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.available) {
+                statusDiv.className = 'availability-status available';
+                messageDiv.textContent = data.message;
+                isDateAvailable = true;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm Booking';
+            } else {
+                statusDiv.className = 'availability-status unavailable';
+                let conflictText = data.message;
+                if (data.conflicts && data.conflicts.length > 0) {
+                    const conflictDates = data.conflicts.map(c => `${c.start_date} to ${c.end_date}`).join(', ');
+                    conflictText += ` (Booked: ${conflictDates})`;
+                }
+                messageDiv.textContent = conflictText;
+                isDateAvailable = false;
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⚠️ Dates Not Available';
+            }
+        } catch (error) {
+            console.error('Error checking availability:', error);
+            statusDiv.className = 'availability-status';
+            messageDiv.textContent = '⚠️ Could not check availability. Please try again.';
+        }
+    }
+
     // Update end date minimum when start date changes
     document.getElementById('start_date').addEventListener('change', function () {
         document.getElementById('end_date').setAttribute('min', this.value);
@@ -151,9 +217,14 @@
             document.getElementById('end_date').value = this.value;
         }
         calculatePrice();
+        checkAvailability();
     });
 
-    document.getElementById('end_date').addEventListener('change', calculatePrice);
+    document.getElementById('end_date').addEventListener('change', function () {
+        calculatePrice();
+        checkAvailability();
+    });
+
     document.getElementById('booking_type').addEventListener('change', calculatePrice);
 
     // Form validation
@@ -164,6 +235,13 @@
         if (endDate < startDate) {
             e.preventDefault();
             alert('End date cannot be before start date!');
+            return;
+        }
+
+        if (!isDateAvailable) {
+            e.preventDefault();
+            alert('❌ These dates are already booked! Please select different dates.');
+            return;
         }
     });
 </script>
@@ -189,6 +267,59 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    /* Availability Status Styles */
+    .availability-status {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .availability-status.checking {
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        color: #4f46e5;
+    }
+
+    .availability-status.available {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #166534;
+    }
+
+    .availability-status.unavailable {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #991b1b;
+    }
+
+    .availability-message {
+        flex: 1;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    button[type="submit"]:disabled {
+        background: #9ca3af !important;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
     }
 </style>
 {% endblock %}

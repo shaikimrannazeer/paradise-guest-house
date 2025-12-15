@@ -97,6 +97,76 @@ def get_all_bookings():
     return bookings
 
 
+def check_date_availability(start_date, end_date, exclude_booking_id=None):
+    """
+    Check if the given date range is available for booking.
+    
+    Args:
+        start_date: Start date string (YYYY-MM-DD)
+        end_date: End date string (YYYY-MM-DD)
+        exclude_booking_id: Optional booking ID to exclude (for editing bookings)
+    
+    Returns:
+        tuple: (is_available: bool, conflicting_bookings: list)
+    """
+    conn = get_db_connection()
+    
+    # Find any bookings that overlap with the requested dates
+    # Overlap occurs when: existing_start < requested_end AND existing_end > requested_start
+    if exclude_booking_id:
+        query = '''
+            SELECT id, name, start_date, end_date, booking_type 
+            FROM bookings 
+            WHERE id != ? AND start_date < ? AND end_date > ?
+        '''
+        conflicting = conn.execute(query, (exclude_booking_id, end_date, start_date)).fetchall()
+    else:
+        query = '''
+            SELECT id, name, start_date, end_date, booking_type 
+            FROM bookings 
+            WHERE start_date < ? AND end_date > ?
+        '''
+        conflicting = conn.execute(query, (end_date, start_date)).fetchall()
+    
+    conn.close()
+    
+    if conflicting:
+        # Convert to list of dicts for easier handling
+        conflicts = []
+        for booking in conflicting:
+            conflicts.append({
+                'id': booking['id'],
+                'name': booking['name'],
+                'start_date': booking['start_date'],
+                'end_date': booking['end_date'],
+                'booking_type': booking['booking_type']
+            })
+        return False, conflicts
+    
+    return True, []
+
+
+def get_booked_dates():
+    """
+    Get all booked date ranges for the calendar display.
+    
+    Returns:
+        list: List of dicts with start_date and end_date
+    """
+    conn = get_db_connection()
+    bookings = conn.execute('SELECT start_date, end_date FROM bookings').fetchall()
+    conn.close()
+    
+    booked_dates = []
+    for booking in bookings:
+        booked_dates.append({
+            'start': booking['start_date'],
+            'end': booking['end_date']
+        })
+    
+    return booked_dates
+
+
 # Initialize database when module is imported
 if __name__ == '__main__':
     init_db()
