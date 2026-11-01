@@ -3,19 +3,46 @@ Paradise Guest House - Flask Application
 Main application file with routes and booking handling
 """
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from database import init_db, save_booking, get_all_bookings, check_date_availability, get_booked_dates
+import hmac
+import os
+import re
+import secrets
+
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
+from database import (init_db, save_booking, get_all_bookings, check_date_availability, get_booked_days,
+                      update_booking_status, validate_dates, PRICES, BOOKING_STATUSES)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = 'paradise_guest_house_secret_key_2024'
+app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-# Admin credentials (change these!)
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'paradise2024'
+# Admin credentials come from the environment. Without a password, login stays disabled.
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 
 # Initialize database on startup
 init_db()
+
+
+def normalize_phone(phone):
+    """Return a 10-digit Indian mobile number, or None if it is invalid"""
+    digits = re.sub(r'[\s()+-]', '', phone or '')
+    if len(digits) == 12 and digits.startswith('91'):
+        digits = digits[2:]
+    return digits if re.fullmatch(r'[6-9][0-9]{9}', digits) else None
+
+
+def csrf_token():
+    """Get the session's token for protecting admin forms"""
+    if 'csrf_token' not in session:
+        session['csrf_token'] = secrets.token_hex(16)
+    return session['csrf_token']
+
+
+def csrf_valid():
+    """Check the token submitted with an admin form"""
+    return hmac.compare_digest(request.form.get('csrf_token', ''), session.get('csrf_token', ''))
 
 
 # ============================================
@@ -43,7 +70,7 @@ def book():
     """
     if request.method == 'POST':
         # Get form data
-        name = request.form.get('name')
+        name = (request.form.get('name') or '').strip()
         phone = request.form.get('phone')
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
@@ -54,6 +81,20 @@ def book():
             flash('Please fill in all fields!', 'error')
             return redirect(url_for('book'))
         
+        phone = normalize_phone(phone)
+        if not phone:
+            flash('Please enter a valid 10-digit mobile number.', 'error')
+            return redirect(url_for('book'))
+
+        if booking_type not in PRICES:
+            flash('Please select a valid booking type.', 'error')
+            return redirect(url_for('book'))
+
+        date_error = validate_dates(start_date, end_date)
+        if date_error:
+            flash(date_error, 'error')
+            return redirect(url_for('book'))
+
         # Check if dates are available
         is_available, conflicts = check_date_availability(start_date, end_date)
         
@@ -69,6 +110,11 @@ def book():
         # Save booking to database
         booking_id, price, num_days = save_booking(name, phone, start_date, end_date, booking_type)
         
+        # Someone else took the dates since the check above
+        if booking_id is None:
+            flash('❌ Sorry, these dates were just booked. Please select different dates.', 'error')
+            return redirect(url_for('book'))
+
         # Show success page
         return render_template('success.html', 
                                name=name, 
@@ -80,8 +126,8 @@ def book():
                                end_date=end_date)
     
     # GET request - show booking form with booked dates
-    booked_dates = get_booked_dates()
-    return render_template('book.html', booked_dates=booked_dates)
+    booked_days = get_booked_days()
+    return render_template('book.html', booked_days=booked_days)
 
 
 @app.route('/api/check-availability', methods=['POST'])
@@ -90,12 +136,16 @@ def check_availability():
     API endpoint to check if dates are available.
     Returns JSON with availability status.
     """
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     start_date = data.get('start_date')
     end_date = data.get('end_date')
     
     if not start_date or not end_date:
         return jsonify({'error': 'Missing dates'}), 400
+
+    date_error = validate_dates(start_date, end_date)
+    if date_error:
+        return jsonify({'error': date_error}), 400
     
     is_available, conflicts = check_date_availability(start_date, end_date)
     
@@ -127,24 +177,52 @@ def contact():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     """
-    Admin page to view all bookings
-    Protected with simple username/password
+    Admin page to view and manage bookings
+    Protected with a username/password login session
     """
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            # Get all bookings from database
-            bookings = get_all_bookings()
-            total_revenue = sum(b['price'] for b in bookings) if bookings else 0
-            return render_template('admin.html', bookings=bookings, total_revenue=total_revenue)
+        username = request.form.get('username', '')
+        password = request.form.get('password', '')
+
+        if (ADMIN_PASSWORD
+                and hmac.compare_digest(username.encode(), ADMIN_USERNAME.encode())
+                and hmac.compare_digest(password.encode(), ADMIN_PASSWORD.encode())):
+            session.clear()
+            session['admin'] = True
         else:
             flash('Invalid credentials!', 'error')
-            return redirect(url_for('admin'))
-    
+        return redirect(url_for('admin'))
+
     # Show login form
-    return render_template('admin_login.html')
+    if not session.get('admin'):
+        return render_template('admin_login.html')
+
+    # Get all bookings from database
+    bookings = get_all_bookings()
+    total_revenue = sum(b['price'] for b in bookings if b['status'] == 'Confirmed')
+    pending_count = sum(1 for b in bookings if b['status'] == 'Pending')
+    return render_template('admin.html', bookings=bookings, total_revenue=total_revenue,
+                           pending_count=pending_count, csrf_token=csrf_token())
+
+
+@app.route('/admin/bookings/<int:booking_id>/status', methods=['POST'])
+def admin_update_status(booking_id):
+    """Mark a booking as Pending, Confirmed or Cancelled"""
+    if not session.get('admin') or not csrf_valid():
+        return redirect(url_for('admin'))
+
+    status = request.form.get('status')
+    if status not in BOOKING_STATUSES or not update_booking_status(booking_id, status):
+        flash(f'Could not update booking #{booking_id}. Its dates may now be taken.', 'error')
+    return redirect(url_for('admin'))
+
+
+@app.route('/admin/logout', methods=['POST'])
+def admin_logout():
+    """Log the admin out"""
+    if csrf_valid():
+        session.clear()
+    return redirect(url_for('admin'))
 
 
 # ============================================

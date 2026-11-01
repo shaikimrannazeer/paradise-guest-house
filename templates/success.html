@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Booking Confirmed - Paradise Guest House{% endblock %}
+{% block title %}Booking Request Received - Paradise Guest House{% endblock %}
 
 {% block content %}
 <!-- Success Section -->
@@ -8,15 +8,15 @@
     <div class="container">
         <div class="success-card">
             <div class="success-icon">✅</div>
-            <h1>Booking Confirmed!</h1>
-            <p class="success-message">Thank you, <strong>{{ name }}</strong>! Your booking has been successfully saved.
+            <h1>Booking Request Received!</h1>
+            <p class="success-message">Thank you, <strong>{{ name }}</strong>! Your dates are held until we call you to confirm.
             </p>
 
             <div class="booking-details">
                 <h3>Booking Details</h3>
                 <div class="details-grid">
                     <div class="detail-item">
-                        <span class="detail-label">Booking ID</span>
+                        <span class="detail-label">Booking Number</span>
                         <span class="detail-value">#{{ booking_id }}</span>
                     </div>
                     <div class="detail-item">
@@ -44,12 +44,15 @@
             </div>
 
             <div class="success-note">
-                <p>📞 We will contact you shortly to confirm your booking.</p>
-                <p>For any queries, please <a href="{{ url_for('contact') }}">contact us</a>.</p>
+                <p>📞 We will call you shortly to confirm your booking and arrange payment.</p>
+                <p>No payment is needed online.</p>
             </div>
 
             <div class="success-actions">
-                <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
+                <a href="tel:+919490025226" class="btn btn-primary">Call Us</a>
+                <a href="https://wa.me/919490025226?text={{ ('Hello! My booking number is #' ~ booking_id ~ ' at Paradise Guest House.')|urlencode }}"
+                    class="btn btn-primary" target="_blank" rel="noopener">WhatsApp Us</a>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
                 <a href="{{ url_for('book') }}" class="btn btn-secondary">Make Another Booking</a>
             </div>
         </div>

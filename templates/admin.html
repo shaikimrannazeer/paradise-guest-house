@@ -6,7 +6,11 @@
 <!-- Page Header -->
 <section class="page-header admin-header">
     <h1>🔐 Admin Dashboard</h1>
-    <p>View all bookings</p>
+    <p>Call guests, then confirm or cancel their requests</p>
+    <form action="{{ url_for('admin_logout') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-secondary">Log Out</button>
+    </form>
 </section>
 
 <!-- Admin Content -->
@@ -16,12 +20,16 @@
         <!-- Stats -->
         <div class="admin-stats">
             <div class="stat-card">
+                <div class="stat-number">{{ pending_count }}</div>
+                <div class="stat-label">Waiting for Your Call</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-number">{{ bookings|length }}</div>
                 <div class="stat-label">Total Bookings</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">₹{{ total_revenue|default(0) }}</div>
-                <div class="stat-label">Total Revenue</div>
+                <div class="stat-number">₹{{ "{:,}".format(total_revenue) }}</div>
+                <div class="stat-label">Confirmed Revenue</div>
             </div>
         </div>
 
@@ -40,6 +48,8 @@
                         <th>Type</th>
                         <th>Price</th>
                         <th>Booked On</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,13 +57,28 @@
                     <tr>
                         <td>#{{ booking.id }}</td>
                         <td>{{ booking.name }}</td>
-                        <td><a href="tel:{{ booking.phone }}">{{ booking.phone }}</a></td>
+                        <td>
+                            <a href="tel:+91{{ booking.phone }}">{{ booking.phone }}</a><br>
+                            <a href="https://wa.me/91{{ booking.phone }}" target="_blank" rel="noopener">WhatsApp</a>
+                        </td>
                         <td>{{ booking.start_date }}</td>
                         <td>{{ booking.end_date }}</td>
                         <td><span class="badge {{ 'stay' if booking.booking_type == 'Stay' else 'function' }}">{{
                                 booking.booking_type }}</span></td>
                         <td class="price">₹{{ "{:,}".format(booking.price) }}</td>
-                        <td>{{ booking.created_at[:10] if booking.created_at else 'N/A' }}</td>
+                        <td>{{ (booking.created_at|string)[:10] if booking.created_at else 'N/A' }}</td>
+                        <td><span class="badge status-{{ booking.status|lower }}">{{ booking.status }}</span></td>
+                        <td>
+                            <form class="status-actions" action="{{ url_for('admin_update_status', booking_id=booking.id) }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                {% if booking.status != 'Confirmed' %}
+                                <button type="submit" name="status" value="Confirmed" class="status-btn confirm">Confirm</button>
+                                {% endif %}
+                                {% if booking.status != 'Cancelled' %}
+                                <button type="submit" name="status" value="Cancelled" class="status-btn cancel">Cancel</button>
+                                {% endif %}
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -162,6 +187,42 @@
     .badge.function {
         background: #f3e5f5;
         color: #7b1fa2;
+    }
+
+    .badge.status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge.status-confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge.status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .status-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .status-btn.confirm {
+        background: #2d8a6e;
+    }
+
+    .status-btn.cancel {
+        background: #b91c1c;
     }
 
     .no-bookings {

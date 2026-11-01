@@ -6,7 +6,7 @@
 <!-- Page Header -->
 <section class="page-header">
     <h1>Book Your Stay</h1>
-    <p>Fill in the details below to make your reservation</p>
+    <p>Send your request and we will call you to confirm</p>
 </section>
 
 <!-- Booking Form Section -->
@@ -27,21 +27,22 @@
                     <!-- Phone Field -->
                     <div class="form-group">
                         <label for="phone">Phone Number <span class="required">*</span></label>
-                        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number"
-                            pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                        <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number"
+                            pattern="[6-9][0-9]{9}" title="Please enter a valid 10-digit phone number" required>
                     </div>
 
                     <!-- Date Fields -->
                     <div class="form-row">
                         <div class="form-group">
                             <label for="start_date">Start Date <span class="required">*</span></label>
-                            <input type="date" id="start_date" name="start_date" required>
+                            <input type="date" id="start_date" name="start_date" placeholder="Select date" required>
                         </div>
                         <div class="form-group">
                             <label for="end_date">End Date <span class="required">*</span></label>
-                            <input type="date" id="end_date" name="end_date" required>
+                            <input type="date" id="end_date" name="end_date" placeholder="Select date" required>
                         </div>
                     </div>
+                    <p class="calendar-hint">Crossed-out dates are already booked. The end date is your checkout day.</p>
 
                     <!-- Availability Status -->
                     <div class="availability-status" id="availabilityStatus" style="display: none;">
@@ -72,7 +73,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="btn btn-primary btn-large btn-block">
-                        Confirm Booking
+                        Request Booking
                     </button>
 
                 </form>
@@ -80,6 +81,13 @@
 
             <!-- Booking Info Sidebar -->
             <div class="booking-info">
+                <div class="info-card">
+                    <h3>🤝 How It Works</h3>
+                    <ul>
+                        <li>Send your booking request. No payment is needed online.</li>
+                        <li>We will call you to confirm and arrange payment.</li>
+                    </ul>
+                </div>
                 <div class="info-card">
                     <h3>📋 Booking Information</h3>
                     <ul>
@@ -112,12 +120,41 @@
     </div>
 </section>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+
 <!-- Form Validation Script -->
 <script>
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('start_date').setAttribute('min', today);
-    document.getElementById('end_date').setAttribute('min', today);
+    // Days taken by other bookings
+    const bookedDays = {{ booked_days|tojson }};
+
+    // End date can go up to the next booked day, which is the checkout day
+    const startPicker = flatpickr('#start_date', {
+        minDate: 'today',
+        disable: bookedDays,
+        disableMobile: true,
+        onChange: function (dates, startDate) {
+            const nextBooked = bookedDays.find(day => day > startDate);
+            endPicker.set('minDate', startDate);
+            endPicker.set('maxDate', nextBooked || null);
+
+            const endDate = document.getElementById('end_date').value;
+            if (!endDate || endDate < startDate || (nextBooked && endDate > nextBooked)) {
+                endPicker.setDate(startDate);
+            }
+            calculatePrice();
+            checkAvailability();
+        }
+    });
+
+    const endPicker = flatpickr('#end_date', {
+        minDate: 'today',
+        disableMobile: true,
+        onChange: function () {
+            calculatePrice();
+            checkAvailability();
+        }
+    });
 
     // Availability check state
     let isDateAvailable = true;
@@ -190,7 +227,7 @@
                 messageDiv.textContent = data.message;
                 isDateAvailable = true;
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Confirm Booking';
+                submitBtn.textContent = 'Request Booking';
             } else {
                 statusDiv.className = 'availability-status unavailable';
                 let conflictText = data.message;
@@ -210,25 +247,17 @@
         }
     }
 
-    // Update end date minimum when start date changes
-    document.getElementById('start_date').addEventListener('change', function () {
-        document.getElementById('end_date').setAttribute('min', this.value);
-        if (document.getElementById('end_date').value < this.value) {
-            document.getElementById('end_date').value = this.value;
-        }
-        calculatePrice();
-        checkAvailability();
-    });
-
-    document.getElementById('end_date').addEventListener('change', function () {
-        calculatePrice();
-        checkAvailability();
-    });
-
     document.getElementById('booking_type').addEventListener('change', calculatePrice);
 
     // Form validation
     document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        // The calendar makes these inputs read-only, so the browser skips required
+        if (!document.getElementById('start_date').value || !document.getElementById('end_date').value) {
+            e.preventDefault();
+            alert('Please select your start and end dates.');
+            return;
+        }
+
         const startDate = new Date(document.getElementById('start_date').value);
         const endDate = new Date(document.getElementById('end_date').value);
 
@@ -247,6 +276,16 @@
 </script>
 
 <style>
+    .calendar-hint {
+        margin: -8px 0 20px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .flatpickr-day.flatpickr-disabled:not(.prevMonthDay):not(.nextMonthDay) {
+        text-decoration: line-through;
+    }
+
     .price-display {
         background: linear-gradient(135deg, #f0f9f6 0%, #e8f5f0 100%);
         padding: 20px;
