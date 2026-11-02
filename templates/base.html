@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,47 +6,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Paradise Guest House - Your perfect stay destination with comfortable rooms and function halls">
+        content="Paradise Guest House in Adilabad - comfortable rooms, a spacious hall and a dining area for stays and functions">
     <title>{% block title %}Paradise Guest House{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='8' fill='%23272a5e'/%3E%3Cpath d='M9 27V16l4-3 4-6 4 6 4 3v11z' fill='%23e9a820'/%3E%3C/svg%3E">
+    <!-- Apply saved theme before paint -->
+    <script>
+        document.documentElement.classList.add('js');
+        try {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch (error) { }
+    </script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
+    {% macro logo() %}
+    <a href="{{ url_for('home') }}" class="logo">
+        <svg class="logo-mark" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 31V15c0-1 3-1 3-3 0-1 3-1 3-3 0-2 3-1 3-3 0-1 3-3 3-3s3 2 3 3c0 2 3 1 3 3 0 2 3 2 3 3 0 2 3 2 3 3v16"/>
+            <path d="M2 31h30"/>
+        </svg>
+        Paradise Guest House
+    </a>
+    {% endmacro %}
+
     <!-- Navigation Bar -->
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Main">
         <div class="nav-container">
-            <a href="{{ url_for('home') }}" class="logo">
-                <span class="logo-icon">🏡</span>
-                Paradise Guest House
-            </a>
-            <button class="nav-toggle" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-links">
+            {{ logo() }}
+            <ul class="nav-links" id="navLinks">
                 <li><a href="{{ url_for('home') }}"
                         class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
                 <li><a href="{{ url_for('facilities') }}"
                         class="{% if request.endpoint == 'facilities' %}active{% endif %}">Facilities</a></li>
-                <li><a href="{{ url_for('book') }}" class="{% if request.endpoint == 'book' %}active{% endif %}">Book
-                        Now</a></li>
                 <li><a href="{{ url_for('contact') }}"
                         class="{% if request.endpoint == 'contact' %}active{% endif %}">Contact</a></li>
+                <li><a href="{{ url_for('book') }}" class="btn btn-primary">Book Now</a></li>
             </ul>
+            <button type="button" class="icon-btn" aria-label="Toggle dark mode" id="themeToggle">{{ icon('moon') }}</button>
+            <button type="button" class="icon-btn nav-toggle" aria-label="Toggle navigation" aria-expanded="false"
+                aria-controls="navLinks">{{ icon('menu') }}</button>
         </div>
     </nav>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-    <div class="flash-messages">
+    <div class="flash-messages" role="alert">
         {% for category, message in messages %}
         <div class="flash-message {{ category }}">
             {{ message }}
@@ -62,91 +76,85 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <span class="logo-icon">🏡</span>
-                <span>Paradise Guest House</span>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    {{ logo() }}
+                    <p>Your home away from home in Adilabad, for peaceful stays and special functions.</p>
+                </div>
+                <div>
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('facilities') }}">Facilities</a></li>
+                        <li><a href="{{ url_for('book') }}">Book Now</a></li>
+                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Reach Us</h4>
+                    <ul>
+                        <li><a href="tel:+919490025226">+91 94900 25226</a></li>
+                        <li><a href="tel:+916281201303">+91 62812 01303</a></li>
+                        <li>Beside Royal Palace Garden, Sathnala Road, Adilabad, Telangana - 504001</li>
+                    </ul>
+                </div>
             </div>
-            <p class="footer-text">Your home away from home</p>
-            <p class="footer-copyright">&copy; 2024 Paradise Guest House. All rights reserved.</p>
+            <p class="footer-copyright">&copy; Paradise Guest House. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- WhatsApp Floating Button -->
     <a href="https://wa.me/919490025226?text=Hello!%20I%20would%20like%20to%20inquire%20about%20booking%20at%20Paradise%20Guest%20House."
         class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-        💬
+        {{ icon('chat') }}
     </a>
 
-    <!-- Dark Mode Toggle -->
-    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
-        🌙
-    </button>
+    <!-- Mobile Action Bar -->
+    <div class="mobile-bar">
+        <a href="tel:+919490025226" class="btn btn-secondary">{{ icon('phone') }} Call</a>
+        <a href="https://wa.me/919490025226" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">{{ icon('chat') }} Chat</a>
+        <a href="{{ url_for('book') }}" class="btn btn-primary">Book Now</a>
+    </div>
 
-    <!-- Mobile Navigation Script -->
+    <!-- Site Script -->
     <script>
         // Mobile navigation toggle
         const navToggle = document.querySelector('.nav-toggle');
         const navLinks = document.querySelector('.nav-links');
 
         navToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            navToggle.classList.toggle('active');
+            const isOpen = navLinks.classList.toggle('active');
+            navToggle.setAttribute('aria-expanded', isOpen);
         });
 
         // Dark Mode Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const html = document.documentElement;
-
-        // Check for saved theme preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            html.setAttribute('data-theme', savedTheme);
-            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            try {
+                localStorage.setItem('theme', newTheme);
+            } catch (error) { }
         });
 
         // Navbar scroll effect
         const navbar = document.querySelector('.navbar');
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+            navbar.classList.toggle('scrolled', window.scrollY > 20);
+        }, { passive: true });
 
         // Scroll Reveal Animation
-        const revealElements = document.querySelectorAll('.feature-card, .pricing-card, .gallery-item, .facility-card, .testimonial-card');
-
-        const revealOnScroll = () => {
-            revealElements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-
-                if (elementTop < windowHeight - 100) {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        };
+        }, { rootMargin: '0px 0px -40px 0px' });
 
-        // Initial state for reveal elements
-        revealElements.forEach(element => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(30px)';
-            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        });
-
-        window.addEventListener('scroll', revealOnScroll);
-        window.addEventListener('load', revealOnScroll);
+        document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
     </script>
 </body>
 

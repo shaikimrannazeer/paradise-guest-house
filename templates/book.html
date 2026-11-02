@@ -82,14 +82,14 @@
             <!-- Booking Info Sidebar -->
             <div class="booking-info">
                 <div class="info-card">
-                    <h3>🤝 How It Works</h3>
+                    <h3>How It Works</h3>
                     <ul>
                         <li>Send your booking request. No payment is needed online.</li>
                         <li>We will call you to confirm and arrange payment.</li>
                     </ul>
                 </div>
                 <div class="info-card">
-                    <h3>📋 Booking Information</h3>
+                    <h3>Booking Information</h3>
                     <ul>
                         <li><strong>Stay Package:</strong> Ground floor access with hall and 2 rooms</li>
                         <li><strong>Function Package:</strong> Full venue including dining area with chairs and crockery
@@ -97,7 +97,7 @@
                     </ul>
                 </div>
                 <div class="info-card">
-                    <h3>💰 Pricing (Per Day)</h3>
+                    <h3>Pricing (Per Day)</h3>
                     <ul class="pricing-list">
                         <li>
                             <span>Stay Only</span>
@@ -110,7 +110,7 @@
                     </ul>
                 </div>
                 <div class="info-card">
-                    <h3>📞 Need Help?</h3>
+                    <h3>Need Help?</h3>
                     <p>Contact us for any questions about your booking.</p>
                     <a href="{{ url_for('contact') }}" class="btn btn-secondary">Contact Us</a>
                 </div>
@@ -274,91 +274,4 @@
         }
     });
 </script>
-
-<style>
-    .calendar-hint {
-        margin: -8px 0 20px;
-        font-size: 0.9rem;
-        color: #666;
-    }
-
-    .flatpickr-day.flatpickr-disabled:not(.prevMonthDay):not(.nextMonthDay) {
-        text-decoration: line-through;
-    }
-
-    .price-display {
-        background: linear-gradient(135deg, #f0f9f6 0%, #e8f5f0 100%);
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 25px;
-        border: 1px solid rgba(45, 138, 110, 0.15);
-    }
-
-    .price-breakdown {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        padding-bottom: 12px;
-        border-bottom: 1px dashed rgba(45, 138, 110, 0.2);
-    }
-
-    .price-total {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    /* Availability Status Styles */
-    .availability-status {
-        padding: 15px 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        animation: fadeIn 0.3s ease;
-    }
-
-    .availability-status.checking {
-        background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
-        border: 1px solid rgba(99, 102, 241, 0.2);
-        color: #4f46e5;
-    }
-
-    .availability-status.available {
-        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-        border: 1px solid rgba(34, 197, 94, 0.3);
-        color: #166534;
-    }
-
-    .availability-status.unavailable {
-        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        color: #991b1b;
-    }
-
-    .availability-message {
-        flex: 1;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    button[type="submit"]:disabled {
-        background: #9ca3af !important;
-        cursor: not-allowed;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-</style>
 {% endblock %}

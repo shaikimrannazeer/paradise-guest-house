@@ -7,7 +7,7 @@
 <section class="success-section">
     <div class="container">
         <div class="success-card">
-            <div class="success-icon">✅</div>
+            <div class="success-icon">✓</div>
             <h1>Booking Request Received!</h1>
             <p class="success-message">Thank you, <strong>{{ name }}</strong>! Your dates are held until we call you to confirm.
             </p>
@@ -44,12 +44,12 @@
             </div>
 
             <div class="success-note">
-                <p>📞 We will call you shortly to confirm your booking and arrange payment.</p>
+                <p>We will call you shortly to confirm your booking and arrange payment.</p>
                 <p>No payment is needed online.</p>
             </div>
 
             <div class="success-actions">
-                <a href="tel:+919490025226" class="btn btn-primary">Call Us</a>
+                <a href="tel:+919490025226" class="btn btn-secondary">Call Us</a>
                 <a href="https://wa.me/919490025226?text={{ ('Hello! My booking number is #' ~ booking_id ~ ' at Paradise Guest House.')|urlencode }}"
                     class="btn btn-primary" target="_blank" rel="noopener">WhatsApp Us</a>
                 <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>

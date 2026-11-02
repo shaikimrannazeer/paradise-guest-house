@@ -1,72 +1,97 @@
 {% extends 'base.html' %}
+{% from '_icons.html' import icon %}
 
-{% block title %}Paradise Guest House - Welcome{% endblock %}
+{% block title %}Paradise Guest House - Stays and Functions in Adilabad{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <section class="hero">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="hero-title">Welcome to Paradise</h1>
-        <p class="hero-subtitle">Your Perfect Guest House in Adilabad</p>
-        <p class="hero-description">
-            Experience comfort and warmth at our beautiful guest house.
-            Whether you're looking for a peaceful stay or a perfect venue for your special functions,
-            we have everything you need.
-        </p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('book') }}" class="btn btn-primary">Book Now</a>
-            <a href="{{ url_for('facilities') }}" class="btn btn-secondary">View Facilities</a>
+    <div class="container hero-grid">
+        <div>
+            <p class="eyebrow">Your Perfect Guest House in Adilabad</p>
+            <h1>Welcome to <em>Paradise</em></h1>
+            <p class="hero-lede">
+                Experience comfort and warmth at our beautiful guest house.
+                Whether you're looking for a peaceful stay or a perfect venue for your special functions,
+                we have everything you need.
+            </p>
+            <div class="btn-group">
+                <a href="{{ url_for('book') }}" class="btn btn-primary btn-large">Check Availability</a>
+                <a href="{{ url_for('facilities') }}" class="btn btn-secondary btn-large">View Facilities</a>
+            </div>
+            <ul class="hero-facts">
+                <li>{{ icon('tag') }} From ₹4,000/day</li>
+                <li>{{ icon('pin') }} Sathnala Road, Adilabad</li>
+            </ul>
+        </div>
+        <div class="hero-visual">
+            <div class="arch">
+                <img src="{{ url_for('static', filename='images/hall3.jpg') }}" width="768" height="1024"
+                    alt="Scalloped arch entrance with curtains leading into the main hall" fetchpriority="high">
+            </div>
         </div>
     </div>
 </section>
 
+<!-- Facts Strip -->
+<section class="facts on-dark" aria-label="Paradise Guest House at a glance">
+    <div class="container facts-grid">
+        <div class="fact"><strong>2</strong><span>Floors</span></div>
+        <div class="fact"><strong>2</strong><span>Comfortable Rooms</span></div>
+        <div class="fact"><strong>₹4,000</strong><span>Stay, per day</span></div>
+        <div class="fact"><strong>₹5,500</strong><span>Function, per day</span></div>
+    </div>
+</section>
+
 <!-- Image Gallery Section -->
-<section class="gallery">
+<section class="section">
     <div class="container">
-        <h2 class="section-title">Our Beautiful Venue</h2>
+        <div class="section-head">
+            <p class="eyebrow">The Venue</p>
+            <h2>Our Beautiful Venue</h2>
+        </div>
         <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="{{ url_for('static', filename='images/hall1.jpg') }}" alt="Main Hall with LED Lighting">
-            </div>
-            <div class="gallery-item">
-                <img src="{{ url_for('static', filename='images/hall2.jpg') }}" alt="Spacious Hall Interior">
-            </div>
-            <div class="gallery-item">
-                <img src="{{ url_for('static', filename='images/hall3.jpg') }}" alt="Hall with Elegant Curtains">
-            </div>
-            <div class="gallery-item">
-                <img src="{{ url_for('static', filename='images/hall4.jpg') }}" alt="Hall Night View">
-            </div>
-            <div class="gallery-item">
-                <img src="{{ url_for('static', filename='images/hall5.jpg') }}" alt="Hall with Seating Area">
-            </div>
+            <figure class="gallery-item wide reveal">
+                <img src="{{ url_for('static', filename='images/hall1.jpg') }}" loading="lazy" alt="Main Hall with LED Lighting">
+            </figure>
+            <figure class="gallery-item tall reveal">
+                <img src="{{ url_for('static', filename='images/hall5.jpg') }}" loading="lazy" alt="Hall with Seating Area">
+            </figure>
+            <figure class="gallery-item reveal">
+                <img src="{{ url_for('static', filename='images/hall2.jpg') }}" loading="lazy" alt="Spacious Hall Interior">
+            </figure>
+            <figure class="gallery-item reveal">
+                <img src="{{ url_for('static', filename='images/hall4.jpg') }}" loading="lazy" alt="Hall Night View">
+            </figure>
         </div>
     </div>
 </section>
 
 <!-- Features Section -->
-<section class="features">
+<section class="section section-alt">
     <div class="container">
-        <h2 class="section-title">Why Choose Us?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🏠</div>
+        <div class="section-head">
+            <p class="eyebrow">Why Paradise</p>
+            <h2>Why Choose Us?</h2>
+        </div>
+        <div class="card-grid">
+            <div class="card reveal">
+                <div class="card-icon">{{ icon('hall') }}</div>
                 <h3>Spacious Halls</h3>
                 <p>Large, comfortable halls perfect for gatherings and functions</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🛏️</div>
+            <div class="card reveal">
+                <div class="card-icon">{{ icon('bed') }}</div>
                 <h3>Cozy Rooms</h3>
                 <p>Well-furnished rooms for a relaxing and comfortable stay</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🍽️</div>
+            <div class="card reveal">
+                <div class="card-icon">{{ icon('dining') }}</div>
                 <h3>Dining Area</h3>
                 <p>Open dining area with great lighting and all amenities</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
+            <div class="card reveal">
+                <div class="card-icon">{{ icon('tag') }}</div>
                 <h3>Affordable</h3>
                 <p>Competitive pricing starting from ₹4000 only</p>
             </div>
@@ -75,90 +100,80 @@
 </section>
 
 <!-- Pricing Preview -->
-<section class="pricing-preview">
+<section class="section">
     <div class="container">
-        <h2 class="section-title">Our Packages</h2>
+        <div class="section-head">
+            <p class="eyebrow">Simple Pricing</p>
+            <h2>Our Packages</h2>
+            <p>No online payment. Send a request and we will call you to confirm.</p>
+        </div>
         <div class="pricing-cards">
-            <div class="pricing-card">
-                <div class="pricing-header">
-                    <h3>Stay Package</h3>
-                    <div class="price">₹4,000</div>
-                </div>
-                <div class="pricing-body">
-                    <ul>
-                        <li>✓ Ground Floor Access</li>
-                        <li>✓ Big Hall</li>
-                        <li>✓ 2 Comfortable Rooms</li>
-                        <li>✓ Basic Amenities</li>
-                    </ul>
-                    <a href="{{ url_for('book') }}" class="btn btn-primary">Book Stay</a>
-                </div>
+            <div class="pricing-card reveal">
+                <h3>Stay Package</h3>
+                <div class="price">₹4,000 <small>/day</small></div>
+                <ul class="check-list">
+                    <li>{{ icon('check') }} Ground Floor Access</li>
+                    <li>{{ icon('check') }} Big Hall</li>
+                    <li>{{ icon('check') }} 2 Comfortable Rooms</li>
+                    <li>{{ icon('check') }} Basic Amenities</li>
+                </ul>
+                <a href="{{ url_for('book') }}" class="btn btn-primary">Book Stay</a>
             </div>
-            <div class="pricing-card featured">
+            <div class="pricing-card featured reveal">
                 <div class="pricing-badge">Popular</div>
-                <div class="pricing-header">
-                    <h3>Function Package</h3>
-                    <div class="price">₹5,500</div>
-                </div>
-                <div class="pricing-body">
-                    <ul>
-                        <li>✓ Full Venue Access</li>
-                        <li>✓ Open Dining Area</li>
-                        <li>✓ Chairs & Crockery</li>
-                        <li>✓ Excellent Lighting</li>
-                    </ul>
-                    <a href="{{ url_for('book') }}" class="btn btn-primary">Book Function</a>
-                </div>
+                <h3>Function Package</h3>
+                <div class="price">₹5,500 <small>/day</small></div>
+                <ul class="check-list">
+                    <li>{{ icon('check') }} Full Venue Access</li>
+                    <li>{{ icon('check') }} Open Dining Area</li>
+                    <li>{{ icon('check') }} Chairs &amp; Crockery</li>
+                    <li>{{ icon('check') }} Excellent Lighting</li>
+                </ul>
+                <a href="{{ url_for('book') }}" class="btn btn-primary">Book Function</a>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Testimonials Section -->
-<section class="testimonials">
+<section class="section section-alt">
     <div class="container">
-        <h2 class="section-title">What Our Guests Say</h2>
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <div class="star-rating">★★★★★</div>
+        <div class="section-head">
+            <p class="eyebrow">Guest Stories</p>
+            <h2>What Our Guests Say</h2>
+        </div>
+        <div class="card-grid">
+            <div class="card testimonial-card reveal">
+                <div class="star-rating" aria-label="5 out of 5 stars">★★★★★</div>
                 <p class="testimonial-content">
                     "Wonderful place for our family function! The hall was spacious, beautifully decorated,
                     and the staff was very helpful. Highly recommend for any special occasion."
                 </p>
                 <div class="testimonial-author">
-                    <div class="author-avatar">👤</div>
-                    <div class="author-info">
-                        <h4>Priya Reddy</h4>
-                        <p>Wedding Anniversary Function</p>
-                    </div>
+                    <h4>Priya Reddy</h4>
+                    <p>Wedding Anniversary Function</p>
                 </div>
             </div>
-            <div class="testimonial-card">
-                <div class="star-rating">★★★★★</div>
+            <div class="card testimonial-card reveal">
+                <div class="star-rating" aria-label="5 out of 5 stars">★★★★★</div>
                 <p class="testimonial-content">
                     "Best guest house in Adilabad! Clean rooms, great location, and very affordable prices.
                     The owner is very friendly and accommodating. Will definitely stay again."
                 </p>
                 <div class="testimonial-author">
-                    <div class="author-avatar">👤</div>
-                    <div class="author-info">
-                        <h4>Ravi Kumar</h4>
-                        <p>Business Trip Stay</p>
-                    </div>
+                    <h4>Ravi Kumar</h4>
+                    <p>Business Trip Stay</p>
                 </div>
             </div>
-            <div class="testimonial-card">
-                <div class="star-rating">★★★★★</div>
+            <div class="card testimonial-card reveal">
+                <div class="star-rating" aria-label="5 out of 5 stars">★★★★★</div>
                 <p class="testimonial-content">
                     "Perfect venue for our engagement ceremony! Amazing LED lighting, ample parking space,
                     and the dining area was perfect for serving our guests. Thank you Paradise!"
                 </p>
                 <div class="testimonial-author">
-                    <div class="author-avatar">👤</div>
-                    <div class="author-info">
-                        <h4>Suresh & Lakshmi</h4>
-                        <p>Engagement Ceremony</p>
-                    </div>
+                    <h4>Suresh &amp; Lakshmi</h4>
+                    <p>Engagement Ceremony</p>
                 </div>
             </div>
         </div>
@@ -166,25 +181,34 @@
 </section>
 
 <!-- Location Section -->
-<section class="location-section">
-    <div class="container">
-        <h2 class="section-title">Our Location</h2>
-        <div class="location-info">
-            <div class="location-icon">📍</div>
-            <p><strong>Paradise Guest House</strong></p>
-            <p>Beside Royal Palace Garden, Sathnala Road</p>
-            <p>Adilabad, Telangana - 504001</p>
-            <p class="location-contact">📞 +91 94900 25226 | +91 62812 01303</p>
+<section class="section">
+    <div class="container split">
+        <div>
+            <p class="eyebrow">Find Us</p>
+            <h2>Our Location</h2>
+            <ul class="contact-list">
+                <li>{{ icon('pin') }}
+                    <span>Paradise Guest House, Beside Royal Palace Garden, Sathnala Road, Adilabad, Telangana - 504001</span>
+                </li>
+                <li>{{ icon('phone') }}
+                    <span><a href="tel:+919490025226">+91 94900 25226</a> | <a href="tel:+916281201303">+91 62812 01303</a></span>
+                </li>
+            </ul>
+            <a href="https://www.google.com/maps/search/Paradise+Guest+House+Sathnala+Road+Adilabad"
+                target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Open in Google Maps</a>
+        </div>
+        <div class="gallery-item reveal" style="aspect-ratio: 4 / 3;">
+            <img src="{{ url_for('static', filename='images/hall2.jpg') }}" loading="lazy" alt="Inside the hall at Paradise Guest House">
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="cta">
+<section class="section cta on-dark">
     <div class="container">
         <h2>Ready to Book Your Stay?</h2>
         <p>Contact us today or book online in just a few clicks!</p>
-        <div class="cta-buttons">
+        <div class="btn-group">
             <a href="{{ url_for('book') }}" class="btn btn-primary btn-large">Book Now</a>
             <a href="{{ url_for('contact') }}" class="btn btn-secondary btn-large">Contact Us</a>
         </div>
