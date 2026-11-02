@@ -7,6 +7,8 @@ import hmac
 import os
 import re
 import secrets
+import urllib.parse
+import urllib.request
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import (init_db, save_booking, get_all_bookings, check_date_availability, get_booked_days,
@@ -21,6 +23,10 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 
+# WhatsApp booking alerts stay off until the API key is set
+CALLMEBOT_API_KEY = os.environ.get('CALLMEBOT_API_KEY')
+WHATSAPP_ALERT_PHONE = os.environ.get('WHATSAPP_ALERT_PHONE', '919490025226')
+
 # Initialize database on startup
 init_db()
 
@@ -31,6 +37,24 @@ def normalize_phone(phone):
     if len(digits) == 12 and digits.startswith('91'):
         digits = digits[2:]
     return digits if re.fullmatch(r'[6-9][0-9]{9}', digits) else None
+
+
+def send_whatsapp_alert(booking_id, name, phone, start_date, end_date, booking_type, price, num_days):
+    """Send the owner a WhatsApp alert. A failure must never stop the booking."""
+    if not CALLMEBOT_API_KEY:
+        return
+
+    message = (f'🏡 New booking #{booking_id}\n'
+               f'Name: {name}\n'
+               f'Phone: +91{phone}\n'
+               f'{booking_type}, {start_date} to {end_date} ({num_days} day{"s" if num_days > 1 else ""})\n'
+               f'Total: ₹{price:,}')
+    query = urllib.parse.urlencode({'phone': WHATSAPP_ALERT_PHONE, 'text': message, 'apikey': CALLMEBOT_API_KEY})
+    try:
+        urllib.request.urlopen(f'https://api.callmebot.com/whatsapp.php?{query}', timeout=5).close()
+    except OSError as error:
+        # Log only the error type, because the URL contains the API key
+        print(f'WhatsApp alert failed for booking #{booking_id}: {type(error).__name__}')
 
 
 def csrf_token():
@@ -114,6 +138,8 @@ def book():
         if booking_id is None:
             flash('❌ Sorry, these dates were just booked. Please select different dates.', 'error')
             return redirect(url_for('book'))
+
+        send_whatsapp_alert(booking_id, name, phone, start_date, end_date, booking_type, price, num_days)
 
         # Show success page
         return render_template('success.html', 
